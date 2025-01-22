@@ -24,10 +24,11 @@ func main(){
 		log.Print("Port is not present in the Environment Variables")
 		port = ":4000"
 	}
+	manager := NewWebsocketManager()
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", home)
-	mux.HandleFunc("/ws", serveWS)
+	mux.HandleFunc("/ws", manager.serveWS)
 
 	log.Printf("Starting a server on %s", port)
 

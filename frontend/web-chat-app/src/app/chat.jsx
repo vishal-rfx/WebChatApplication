@@ -11,6 +11,12 @@ function Chat() {
     console.log("Establishing websocket connection");
     const newSocket = new WebSocket("http://localhost:4000/ws");
     setSocket(newSocket);
+    // TODO: Create an event listener and listen to the messages
+    newSocket.onmessage = (evt) => {
+      console.log(evt);
+      setMsgs(prevMsgs => [...prevMsgs, {text: evt.data, sentByCurrentUser: false}])
+    }
+
     // When the page closes, this cleanup function is called.
     return () => newSocket.close();
   }, []);
@@ -19,7 +25,7 @@ function Chat() {
     e.preventDefault();
     if (socket && socket.readyState == WebSocket.OPEN) {
       socket.send(msg);
-      setMsgs([...msgs, msg])
+      setMsgs(prevMsgs => [...prevMsgs, {text: msg, sentByCurrentUser: true}])
       setMsg("");
     }
   };
@@ -28,8 +34,10 @@ function Chat() {
     <div>
       <div className="msg-container">
         {msgs.map((msg, index) => (
-          <div className="msg text-right m-5" key={index}>
-            {msg}
+          <div className={`m-5 ${msg.sentByCurrentUser ? 'text-right' : 'text-left'}`} key={index}>
+            <span className={`p-3 rounded-lg ${msg.sentByCurrentUser ? 'bg-blue-200' : 'bg-green-200'}`}>
+              {msg.text}
+            </span>
           </div>
         ))}
       </div>
