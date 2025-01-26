@@ -16,10 +16,14 @@ import (
 type application struct {
 	logger *slog.Logger
 	user *models.UserModel
+	PORT string
+	MONGO_URI string
+	SECRET string
 }
 
 var PORT string
 var MONGO_URI string
+var SECRET string
 
 func loadEnvironmentVariables(){
 	err := godotenv.Load("./cmd/web/.env")
@@ -35,6 +39,11 @@ func loadEnvironmentVariables(){
 	MONGO_URI = os.Getenv("MONGO_URI")
 	if MONGO_URI == "" {
 		log.Fatal("Mongo URI not found in environment variables")
+	}
+
+	SECRET = os.Getenv("SECRET")
+	if SECRET == "" {
+		log.Fatal("Secret is not defined")
 	}
 
 }
@@ -80,6 +89,7 @@ func main(){
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /auth/signup", app.signup)
+	mux.HandleFunc("POST /auth/signin", app.signin)
 
 	app.logger.Info("Starting a server on %s", "addr", PORT)
 	err = http.ListenAndServe(PORT, mux)
