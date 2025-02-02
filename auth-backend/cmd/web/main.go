@@ -87,12 +87,10 @@ func main(){
 		user: &models.UserModel{Client: client},
 	}
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("POST /auth/signup", app.signup)
-	mux.HandleFunc("POST /auth/signin", app.signin)
+	
 
 	app.logger.Info("Starting a server on %s", "addr", PORT)
-	err = http.ListenAndServe(PORT, mux)
+	err = http.ListenAndServe(PORT, app.routes())
 	if err != nil {
 		app.logger.Error(err.Error())
 		os.Exit(1)

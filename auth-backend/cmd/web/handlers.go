@@ -20,7 +20,6 @@ type SigninData struct {
 }
 
 type Response struct {
-	StatusCode int `json:"StatusCode"`
 	Message string `json:"message"`
 }
 
@@ -51,7 +50,8 @@ func (app *application) signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := Response{StatusCode: http.StatusOK, Message: "Signup Successful"}
+	w.WriteHeader(http.StatusCreated)
+	response := Response{Message: "Signup Successful"}
 	jsonStr, err := json.Marshal(response)
 
 	if err != nil {
@@ -63,7 +63,7 @@ func (app *application) signup(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (app *application) signin(w http.ResponseWriter, r *http.Request) {
+func (app *application) login(w http.ResponseWriter, r *http.Request) {
 	var user SigninData
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
@@ -96,7 +96,9 @@ func (app *application) signin(w http.ResponseWriter, r *http.Request) {
 		Secure: false,
 	})
 
-	response := Response{StatusCode: http.StatusOK, Message: "Sign In Successful"}
+	
+	w.WriteHeader(http.StatusOK)
+	response := Response{ Message: "Sign In Successful"}
 	jsonStr, err := json.Marshal(response)
 
 	if err != nil {
