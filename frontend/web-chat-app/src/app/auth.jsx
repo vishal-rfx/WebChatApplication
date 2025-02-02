@@ -1,11 +1,12 @@
 "use client";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const Auth = () => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
-
+  const router = useRouter();
   const signUpFunc = async (event) => {
     event.preventDefault();
 
@@ -18,6 +19,8 @@ const Auth = () => {
       console.log(res);
       if (res.status != 201) {
         alert("Username not created");
+      } else {
+        router.push("/chat");
       }
     } catch (error) {
       console.log(error);
@@ -35,6 +38,8 @@ const Auth = () => {
       // console.log(res);
       if (res.status != 200) {
         alert("Login unsuccessful");
+      } else {
+        router.push("/chat");
       }
     } catch (error) {
       console.log(error);

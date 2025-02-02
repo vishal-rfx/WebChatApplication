@@ -11,11 +11,13 @@ function Chat() {
     console.log("Establishing websocket connection");
     const newSocket = new WebSocket("http://localhost:4000/ws");
     setSocket(newSocket);
-    // TODO: Create an event listener and listen to the messages
     newSocket.onmessage = (evt) => {
       console.log(evt);
-      setMsgs(prevMsgs => [...prevMsgs, {text: evt.data, sentByCurrentUser: false}])
-    }
+      setMsgs((prevMsgs) => [
+        ...prevMsgs,
+        { text: evt.data, sentByCurrentUser: false },
+      ]);
+    };
 
     // When the page closes, this cleanup function is called.
     return () => newSocket.close();
@@ -25,7 +27,10 @@ function Chat() {
     e.preventDefault();
     if (socket && socket.readyState == WebSocket.OPEN) {
       socket.send(msg);
-      setMsgs(prevMsgs => [...prevMsgs, {text: msg, sentByCurrentUser: true}])
+      setMsgs((prevMsgs) => [
+        ...prevMsgs,
+        { text: msg, sentByCurrentUser: true },
+      ]);
       setMsg("");
     }
   };
@@ -34,15 +39,24 @@ function Chat() {
     <div>
       <div className="msg-container">
         {msgs.map((msg, index) => (
-          <div className={`m-5 ${msg.sentByCurrentUser ? 'text-right' : 'text-left'}`} key={index}>
-            <span className={`p-3 rounded-lg ${msg.sentByCurrentUser ? 'bg-blue-200' : 'bg-green-200'}`}>
+          <div
+            className={`m-5 ${
+              msg.sentByCurrentUser ? "text-right" : "text-left"
+            }`}
+            key={index}
+          >
+            <span
+              className={`p-3 rounded-lg ${
+                msg.sentByCurrentUser ? "bg-blue-200" : "bg-green-200"
+              }`}
+            >
               {msg.text}
             </span>
           </div>
         ))}
       </div>
 
-      <form onSubmit={sendMsg} className="max-w-md mx-auto my-10">
+      <form onSubmit={sendMsg} className="max-w-md mx-auto my-10 fixed bottom-0 left-0 right-0 p-4 bg-white">
         <div className="relative">
           <input
             type="text"
