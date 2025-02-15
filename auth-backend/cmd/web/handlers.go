@@ -24,6 +24,7 @@ type Response struct {
 }
 
 func (app *application) signup(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	var user SignupData
 	// Decode the json request and store it in user variable
 	err := json.NewDecoder(r.Body).Decode(&user)
@@ -40,7 +41,12 @@ func (app *application) signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if ok {
-		app.clientError(w, models.ErrDuplicateUsername.Error(), http.StatusBadRequest)
+		response := Response{Message: "Username already exists"}
+		w.WriteHeader(201)
+		err = json.NewEncoder(w).Encode(response)
+		if err != nil {
+			app.serverError(w, r, err)
+		}
 		return
 	}
 	err = app.user.Insert(username, password)
@@ -52,19 +58,16 @@ func (app *application) signup(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	response := Response{Message: "Signup Successful"}
-	jsonStr, err := json.Marshal(response)
-
+	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
 	}
-
-	w.Write(jsonStr)
-
 }
 
 func (app *application) login(w http.ResponseWriter, r *http.Request) {
 	var user SigninData
+	w.Header().Set("Content-Type", "application/json")
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		app.clientError(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
@@ -96,15 +99,11 @@ func (app *application) login(w http.ResponseWriter, r *http.Request) {
 		Secure: false,
 	})
 
-	
 	w.WriteHeader(http.StatusOK)
 	response := Response{ Message: "Sign In Successful"}
-	jsonStr, err := json.Marshal(response)
-
+	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
 	}
-
-	w.Write(jsonStr)
 }

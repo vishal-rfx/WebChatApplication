@@ -7,20 +7,29 @@ const Auth = () => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+
   const signUpFunc = async (event) => {
     event.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:8000/auth/signup", {
-        username: username,
-        password: password,
-      });
+      const res = await axios.post(
+        "http://localhost:8000/auth/signup",
+        {
+          username: username,
+          password: password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
 
       console.log(res);
       if (res.status != 201) {
         alert("Username not created");
+      } else if (res.data.message === "Username already exists") {
+        alert(res.data.message);
       } else {
-        router.push("/chat");
+        alert("Username created. Please sign in");
       }
     } catch (error) {
       console.log(error);
@@ -30,12 +39,18 @@ const Auth = () => {
   const loginFunc = async (event) => {
     event.preventDefault();
     try {
-      const res = await axios.post("http://localhost:8000/auth/login", {
-        username: username,
-        password: password,
-      });
+      const res = await axios.post(
+        "http://localhost:8000/auth/login",
+        {
+          username: username,
+          password: password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
 
-      // console.log(res);
+      console.log(res);
       if (res.status != 200) {
         alert("Login unsuccessful");
       } else {
