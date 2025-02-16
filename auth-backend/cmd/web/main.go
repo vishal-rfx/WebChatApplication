@@ -85,6 +85,7 @@ func main(){
 	app := &application{
 		logger: logger,
 		user: &models.UserModel{Client: client},
+		SECRET: SECRET,
 	}
 
 	

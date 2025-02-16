@@ -26,7 +26,7 @@ func (app *application) createJwtToken(userId, secretKey string) (string, error)
 
 func (app *application) verifyJwtToken(tokenString string) (bool, error) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
-		return app.SECRET, nil
+		return []byte(app.SECRET), nil
 	})
 	if err != nil {
 		return false, err
@@ -37,6 +37,7 @@ func (app *application) verifyJwtToken(tokenString string) (bool, error) {
 // serverError helper writes a log entry at Error level (including the request method and request URI as attributes),
 // then sends a generic 500 Internal server error response to the user.
 func (app *application) serverError(w http.ResponseWriter, r *http.Request, err error){
+	w.Header().Set("Content-Type", "application/json")
 	var (
 		method = r.Method
 		uri = r.RequestURI

@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -65,6 +66,26 @@ type UserMongoFields struct {
 	HashedPassword string `bson:"hashedpassword"`
 	ID primitive.ObjectID `bson:"_id"`
 }
+
+func (m *UserModel) GetAll() ([]UserMongoFields, error) {
+	coll := m.Client.Database(db).Collection(collection)
+
+	projection := bson.M{"username": 1, "_id": 1}
+	opts := options.Find().SetProjection(projection)
+	cursor, err := coll.Find(context.TODO(), bson.M{}, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	var users [] UserMongoFields
+	err = cursor.All(context.TODO(), &users)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
 
 func (m *UserModel) Authenticate(username, password string) (string, error) {
 	coll := m.Client.Database(db).Collection(collection)

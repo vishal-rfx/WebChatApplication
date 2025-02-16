@@ -90,20 +90,35 @@ func (app *application) login(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, r, err)
 		return
 	}
-	
+
 	http.SetCookie(w, &http.Cookie{
-		Name: "jwt",
-		Value: jwtToken,
-		Expires: time.Now().Add(time.Hour*4),
+		Name:     "jwt",
+		Value:    jwtToken,
+		Expires:  time.Now().Add(time.Hour * 4),
 		SameSite: http.SameSiteStrictMode,
-		Secure: false,
+		Secure:   false,
 	})
 
 	w.WriteHeader(http.StatusOK)
-	response := Response{ Message: "Sign In Successful"}
+	response := Response{Message: "Sign In Successful"}
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
 	}
+}
+
+func (app *application) getUsers(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	users, err := app.user.GetAll()
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+	err = json.NewEncoder(w).Encode(users)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
 }

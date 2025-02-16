@@ -1,6 +1,9 @@
 package main
 
-import "net/http"
+import (
+	"encoding/json"
+	"net/http"
+)
 
 func (app *application) enableCors(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -36,19 +39,25 @@ func (app *application) logRequest(next http.Handler) http.Handler {
 
 func (app *application) authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		tokenString := r.Header.Get("jwt")
-		if tokenString == "" {
-			app.logger.Debug("Token does not exist", "token", tokenString)
+		cookie, err := r.Cookie("jwt")
+		if err != nil {
+			app.logger.Debug("Cookie does not exist or failed to retrieve", "error", err)
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(Response{Message: "Unauthorized"})
 			return
 		}
-
+		tokenString := cookie.Value
 		ok, err := app.verifyJwtToken(tokenString)
 		if err != nil {
-			app.logger.Debug("Token verification failed", "token", tokenString);
+			app.logger.Debug("Token verification failed", "token", tokenString, "error", err);
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(Response{Message: "Unauthorized"})
 			return
 		}
 		if !ok {
 			app.logger.Debug("Invalid token", "token", tokenString)
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(Response{Message: "Unauthorized"})
 			return
 		}
 
