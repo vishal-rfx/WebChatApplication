@@ -1,15 +1,19 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
+import { useAuthStore } from "../store/authStore";
 
 function Chat() {
   const [msg, setMsg] = useState("");
   const [socket, setSocket] = useState(null);
   const [msgs, setMsgs] = useState([]);
+  const { authName } = useAuthStore();
 
   useEffect(() => {
     // Establish a websocket connection
     console.log("Establishing websocket connection");
-    const newSocket = new WebSocket("http://localhost:4000/ws");
+    const queryParams = new URLSearchParams({ authName }).toString();
+    const wsUrl = `ws://localhost:4000/ws?${queryParams}`;
+    const newSocket = new WebSocket(wsUrl);
     setSocket(newSocket);
     newSocket.onmessage = (evt) => {
       console.log(evt);

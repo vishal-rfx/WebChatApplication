@@ -2,10 +2,12 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import {useAuthStore} from "../store/authStore";
 
 const Auth = () => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const {updateAuthName} = useAuthStore();
   const router = useRouter();
 
   const signUpFunc = async (event) => {
@@ -54,6 +56,7 @@ const Auth = () => {
       if (res.status != 200) {
         alert("Login unsuccessful");
       } else {
+        updateAuthName(username);
         router.push("/chat");
       }
     } catch (error) {
