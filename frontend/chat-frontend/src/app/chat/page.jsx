@@ -56,7 +56,10 @@ function Chat() {
         ))}
       </div>
 
-      <form onSubmit={sendMsg} className="max-w-md mx-auto my-10 fixed bottom-0 left-0 right-0 p-4 bg-white">
+      <form
+        onSubmit={sendMsg}
+        className="max-w-md mx-auto my-10 fixed bottom-0 left-0 right-0 p-4 bg-white"
+      >
         <div className="relative">
           <input
             type="text"
