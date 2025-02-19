@@ -2,7 +2,7 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import {useAuthStore} from "../store/authStore";
+import { useAuthStore } from "./zustand/useAuthStore";
 
 const Auth = () => {
   const [username, setUserName] = useState("");

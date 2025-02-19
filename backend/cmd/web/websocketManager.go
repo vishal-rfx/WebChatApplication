@@ -33,7 +33,8 @@ func NewWebsocketManager() *WebsocketManager {
 
 func (m *WebsocketManager) serveWSHelper(w http.ResponseWriter, r *http.Request) {
 	log.Println("New Connection")
-
+	authName := r.URL.Query().Get("authName")
+	log.Println("Connection from ", authName)
 	conn, err := websocketUpgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)

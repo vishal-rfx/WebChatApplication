@@ -1,6 +1,6 @@
 "use client";
 import React, { use, useEffect, useState } from "react";
-import { useAuthStore } from "../store/authStore";
+import { useAuthStore } from "../zustand/useAuthStore";
 
 function Chat() {
   const [msg, setMsg] = useState("");
